@@ -1,17 +1,18 @@
-import { useState, useEffect, useRef } from 'react'
-import { Heart, Trophy, Music, Play, Pause, SkipForward, Clock, Camera,  ChevronLeft } from 'lucide-react'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { Heart, Music, Play, Pause, SkipForward, Clock, Camera, ChevronLeft, Sparkles, MapPin } from 'lucide-react'
 
 // --- CONFIGURAÇÕES DO CASAL ---
 const DATA_INICIO_NAMORO = new Date("2025-02-16T00:00:00"); 
 
-// 2. Playlist de músicas
 const PLAYLIST = [
   { title: "Nossa Música", url: "/musica1.mp3" }, 
   { title: "Obrigado por me esperar", url: "/musica2.mp3" },
   { title: "Te amo", url: "/musica3.mp3" }
 ];
 
-// 3. Dados da Jornada
+
+
+
 const JORNADA = [
   {
     data: "O Início",
@@ -85,234 +86,297 @@ const JORNADA = [
   },
 ];
 
+// Componente de Chuva Otimizado para Mobile
+const RainEffect = ({ images }) => {
+  const particles = useMemo(() => {
+    return [...Array(12)].map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      delay: `${Math.random() * 5}s`,
+      duration: `${10 + Math.random() * 10}s`,
+      size: Math.random() * (50 - 30) + 30, // Tamanho menor no mobile
+      img: images[i % images.length].foto,
+      type: i % 3 === 0 ? 'heart' : 'photo'
+    }));
+  }, [images]);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+      {particles.map(p => (
+        <div
+          key={p.id}
+          className="absolute animate-fall opacity-15"
+          style={{
+            left: p.left,
+            animationDelay: p.delay,
+            animationDuration: p.duration,
+            top: '-100px'
+          }}
+        >
+          {p.type === 'heart' ? (
+            <Heart size={p.size / 1.5} className="text-pink-300 fill-pink-200" />
+          ) : (
+            <img 
+              src={p.img} 
+              style={{ width: p.size, height: p.size }} 
+              className="rounded-lg object-cover border border-white shadow-sm"
+              alt=""
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 function App() {
   const [tempoJuntos, setTempoJuntos] = useState({ dias: 0, horas: 0, minutos: 0, segundos: 0 });
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const audioRef = useRef(new Audio(PLAYLIST[0].url));
-  const [noButtonPos, setNoButtonPos] = useState({ top: '0', left: '0', position: 'static' });
+  const [noButtonPos, setNoButtonPos] = useState({ top: 'auto', left: 'auto', position: 'relative' });
   const [aceitou, setAceitou] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Efeito do Contador
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const currentProgress = (window.scrollY / totalScroll) * 100;
+      setScrollProgress(currentProgress);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       const agora = new Date();
       const diferenca = agora - DATA_INICIO_NAMORO;
-      const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
-      const horas = Math.floor((diferenca / (1000 * 60 * 60)) % 24);
-      const minutos = Math.floor((diferenca / 1000 / 60) % 60);
-      const segundos = Math.floor((diferenca / 1000) % 60);
-      setTempoJuntos({ dias, horas, minutos, segundos });
+      setTempoJuntos({
+        dias: Math.floor(diferenca / (1000 * 60 * 60 * 24)),
+        horas: Math.floor((diferenca / (1000 * 60 * 60)) % 24),
+        minutos: Math.floor((diferenca / 1000 / 60) % 60),
+        segundos: Math.floor((diferenca / 1000) % 60)
+      });
     }, 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Controle de Música
-  useEffect(() => {
-    audioRef.current.src = PLAYLIST[currentSongIndex].url;
-    if (isPlaying) {
-      audioRef.current.play().catch(e => console.log("Clique para tocar"));
-    }
-  }, [currentSongIndex]);
-
   const togglePlay = () => {
-    if (isPlaying) {
-      audioRef.current.pause();
+    if(isPlaying) {
+        audioRef.current.pause();
     } else {
-      audioRef.current.play();
+        audioRef.current.play().catch(e => console.log("Interação necessária"));
     }
     setIsPlaying(!isPlaying);
   };
 
   const nextSong = () => {
+    setIsPlaying(false);
     setCurrentSongIndex((prev) => (prev + 1) % PLAYLIST.length);
+    setTimeout(() => {
+        audioRef.current.src = PLAYLIST[(currentSongIndex + 1) % PLAYLIST.length].url;
+        audioRef.current.play();
+        setIsPlaying(true);
+    }, 100);
   };
 
-  // Botão fujão
   const fogeBotao = (e) => {
-    const x = Math.random() * (window.innerWidth - 150); 
-    const y = Math.random() * (window.innerHeight - 150);
-    setNoButtonPos({ position: 'absolute', top: `${y}px`, left: `${x}px` });
+    // Cálculo seguro para mobile (evita sair da tela)
+    const buttonWidth = 100;
+    const buttonHeight = 50;
+    const maxWidth = window.innerWidth - buttonWidth - 20;
+    const maxHeight = window.innerHeight - buttonHeight - 20;
+    
+    const x = Math.max(20, Math.random() * maxWidth); 
+    const y = Math.max(20, Math.random() * maxHeight);
+    
+    setNoButtonPos({ position: 'fixed', top: `${y}px`, left: `${x}px`, zIndex: 50 });
   };
 
   if (aceitou) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-pink-100 text-center p-6 animate-fade-in">
-        <h1 className="text-4xl md:text-6xl font-bold text-red-600 mb-6 animate-bounce">EU TE AMO MUITO! ❤️</h1>
-        <p className="text-xl md:text-2xl text-pink-800 mb-8 max-w-lg">Prometo te fazer a mulher mais feliz do mundo, todos os dias.</p>
-        <div className="relative group">
-             <img src="/foto_favorita.jpeg" alt="Nós" className="w-72 h-72 md:w-96 md:h-96 object-cover rounded-full border-8 border-white shadow-2xl transform group-hover:scale-105 transition duration-500" />
-             <Heart className="absolute bottom-4 right-10 text-red-500 fill-red-500 w-16 h-16 md:w-24 md:h-24 animate-ping" />
-
+      <div className="min-h-screen flex flex-col items-center justify-center bg-pink-50 text-center p-4 animate-in fade-in duration-700">
+        <h1 className="text-4xl md:text-6xl font-bold text-red-600 mb-6 animate-bounce">PARA SEMPRE NÓS! ❤️</h1>
+        <p className="text-stone-600 mb-8 max-w-md">Prometo te fazer a mulher mais feliz desse mundo.</p>
+        <div className="relative">
+          <img src="/foto_favorita.jpeg" className="w-64 h-64 md:w-96 md:h-96 object-cover rounded-full border-8 border-white shadow-2xl" />
+          <Sparkles className="absolute -top-4 -right-4 text-yellow-400 animate-pulse" size={40} />
         </div>
-        <div>
-          <button className='h-15 cursor-pointer'>
-            <ChevronLeft size={50}
-            onClick={() =>{setAceitou(false)}}/>
-          </button>
-        </div>
+        <button onClick={() => setAceitou(false)} className="mt-12 px-6 py-2 rounded-full bg-white shadow-md text-pink-500 flex items-center gap-2 hover:bg-pink-50 transition-colors">
+          <ChevronLeft size={20} /> Rever nossa história
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-800 font-sans pb-24 overflow-x-hidden">
+    <div className="min-h-screen bg-[#fffafa] text-stone-800 font-sans selection:bg-pink-100 overflow-x-hidden pb-24">
       
-      {/* --- HERO SECTION --- */}
-      <header className="flex flex-col items-center justify-center min-h-[90vh] bg-gradient-to-b from-red-100 to-stone-50 p-4 relative overflow-hidden">
-        {/* Decoração de fundo */}
-        <div className="absolute top-10 left-10 text-pink-200 animate-pulse hidden md:block"><Heart size={100} /></div>
-        <div className="absolute bottom-20 right-10 text-pink-200 animate-bounce delay-700 hidden md:block"><Heart size={80} /></div>
-        
-        <div className="relative z-10 group mt-10">
-          <div className="absolute -inset-2 bg-gradient-to-r from-pink-600 to-red-600 rounded-full blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-          {/* AUMENTADO AQUI: w-64 h-64 no mobile, w-96 h-96 no desktop */}
-          <img 
-            src="/foto_favorita.jpeg" 
-            alt="Casal" 
-            className="relative w-64 h-64 md:w-96 md:h-96 rounded-full object-cover border-8 border-white shadow-2xl transform transition duration-500 hover:scale-105"
-          />
+      {/* BARRA DE PROGRESSO */}
+      <div className="fixed top-0 left-0 w-full h-1.5 z-[100] bg-pink-50">
+        <div 
+          className="h-full bg-gradient-to-r from-red-400 to-pink-500 transition-all duration-150"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
+
+      <RainEffect images={JORNADA} />
+
+      {/* HERO SECTION */}
+      <header className="relative min-h-[90vh] flex flex-col items-center justify-center p-4 text-center">
+        <div className="z-10 space-y-6">
+          <div className="relative inline-block group">
+            <div className="absolute -inset-2 bg-pink-300 rounded-full blur-xl opacity-30 animate-pulse"></div>
+            <img 
+              src="/foto_favorita.jpeg" 
+              className="relative w-48 h-48 md:w-72 md:h-72 rounded-full object-cover border-4 border-white shadow-2xl transition-transform duration-500 hover:scale-105" 
+            />
+          </div>
+          <h1 className="text-4xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-600 px-2 leading-tight">
+            Sofia Munhoz
+          </h1>
+          <p className="text-base md:text-2xl text-stone-500 font-light italic max-w-xs md:max-w-2xl mx-auto">
+            "Cada segundo com você é um presente que eu guardo no peito."
+          </p>
+          <div className="pt-8 animate-bounce text-pink-300">
+            <ChevronLeft className="-rotate-90 mx-auto" size={30} />
+          </div>
         </div>
-        
-        <h1 className="text-4xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-600 mt-10 mb-6 text-center leading-tight">
-          Sofia Munhoz Rodrigues
-        </h1>
-        <p className="text-lg md:text-3xl text-stone-600 max-w-3xl text-center font-light px-4">
-          "Cada momento ao seu lado é uma página da minha história favorita."
-        </p>
       </header>
 
-      {/* --- CONTADOR --- */}
-      <section className="py-12 px-4 flex justify-center -mt-10 relative z-20">
-        <div className="bg-white/90 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-xl text-center border border-pink-100 max-w-5xl w-full">
-          <h2 className="text-2xl md:text-3xl font-semibold text-pink-500 mb-8 flex items-center justify-center gap-3">
-            <Clock className="animate-spin-slow w-8 h-8" /> Tempo que você me faz feliz
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-stone-700">
-            <div className="bg-pink-50 p-6 rounded-2xl shadow-sm transform hover:-translate-y-1 transition"><span className="text-3xl md:text-6xl font-bold text-red-500 block">{tempoJuntos.dias}</span><span className="text-xs md:text-sm uppercase tracking-wider font-bold text-pink-400">Dias</span></div>
-            <div className="bg-pink-50 p-6 rounded-2xl shadow-sm transform hover:-translate-y-1 transition"><span className="text-3xl md:text-6xl font-bold text-red-500 block">{tempoJuntos.horas}</span><span className="text-xs md:text-sm uppercase tracking-wider font-bold text-pink-400">Horas</span></div>
-            <div className="bg-pink-50 p-6 rounded-2xl shadow-sm transform hover:-translate-y-1 transition"><span className="text-3xl md:text-6xl font-bold text-red-500 block">{tempoJuntos.minutos}</span><span className="text-xs md:text-sm uppercase tracking-wider font-bold text-pink-400">Min</span></div>
-            <div className="bg-pink-50 p-6 rounded-2xl shadow-sm transform hover:-translate-y-1 transition"><span className="text-3xl md:text-6xl font-bold text-red-500 block">{tempoJuntos.segundos}</span><span className="text-xs md:text-sm uppercase tracking-wider font-bold text-pink-400">Seg</span></div>
+      {/* CONTADOR - Grid Responsivo (2x2 Mobile, 4x1 Desktop) */}
+      <section className="py-8 px-4 relative z-10">
+        <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md p-6 rounded-[2rem] shadow-lg border border-pink-50">
+          <h2 className="text-center text-xs font-bold uppercase tracking-widest text-pink-400 mb-6">Tempo juntos</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Object.entries(tempoJuntos).map(([unit, value]) => (
+              <div key={unit} className="text-center bg-white p-3 rounded-xl shadow-sm border border-pink-50">
+                <div className="text-2xl md:text-5xl font-bold text-red-500">{value}</div>
+                <div className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-stone-400">{unit}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* --- NOSSA JORNADA (TIMELINE COM FOTOS GRANDES) --- */}
-      <section className="max-w-6xl mx-auto py-24 px-4 md:px-8">
-        <h2 className="text-4xl md:text-5xl font-bold text-center text-pink-600 mb-20 flex items-center justify-center gap-4">
-          <Camera className="w-10 h-10" /> Nossos Momentos
-        </h2>
-        
-        <div className="relative border-l-4 border-pink-200 ml-4 md:ml-1/2 space-y-20">
-          {JORNADA.map((item, index) => (
-            <div key={index} className={`relative pl-8 md:pl-0 flex flex-col md:flex-row items-center ${index % 2 === 0 ? 'md:flex-row-reverse' : ''} gap-10 group`}>
-              
-              {/* Marcador da Timeline */}
-              <div className="absolute left-[-14px] md:left-1/2 md:ml-[-14px] bg-white border-4 border-pink-500 w-7 h-7 rounded-full z-10 group-hover:scale-150 transition-transform duration-300 shadow-md"></div>
-              
-              <div className="hidden md:block w-1/2"></div>
-
-              {/* Card de Conteúdo */}
-              <div className="bg-white p-4 rounded-3xl shadow-xl border border-pink-50 hover:shadow-2xl transition-all duration-300 w-full md:w-[calc(50%-2.5rem)] hover:-translate-y-2 flex flex-col">
-                
-                {/* Área da Foto - AUMENTADA */}
-                {/* h-64 no mobile, h-96 no desktop */}
-                <div className="relative h-64 md:h-96 w-full overflow-hidden rounded-2xl mb-6 bg-stone-100">
+      {/* JORNADA - Layout Coluna Única (Mobile First) */}
+      <section className="max-w-5xl mx-auto py-16 px-4 space-y-20 relative z-10">
+        {JORNADA.map((item, index) => (
+          // No mobile: sempre coluna. No desktop (md): alterna lados
+          <div key={index} className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-6 md:gap-16`}>
+            
+            {/* Card da Foto */}
+            <div className="w-full md:w-1/2 group">
+              <div className="relative bg-white p-3 rounded-[2rem] shadow-xl transform transition duration-500 hover:scale-[1.02]">
+                <div className="aspect-[4/5] rounded-[1.5rem] overflow-hidden bg-stone-100">
                   <img 
                     src={item.foto} 
-                    alt={item.titulo} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    onError={(e) => {e.target.src = "https://via.placeholder.com/600x800?text=Foto+Aqui"}} 
+                    className="w-full h-full object-cover" 
+                    alt={item.titulo}
+                    loading="lazy"
                   />
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-md">
-                    {item.icone}
-                  </div>
                 </div>
-
-                <div className="px-2 pb-2">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-sm font-bold text-white bg-pink-400 px-4 py-1 rounded-full shadow-sm">{item.data}</span>
-                  </div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-stone-800 mb-3">{item.titulo}</h3>
-                  <p className="text-stone-600 text-base md:text-lg leading-relaxed">{item.descricao}</p>
+                <div className="absolute -top-3 -right-3 bg-white p-2 rounded-full shadow-lg border border-pink-50">
+                  {item.icone}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+
+            {/* Textos */}
+            <div className="w-full md:w-1/2 text-center md:text-left space-y-3 px-2">
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-2">
+                <span className="bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                    {item.data}
+                </span>
+              </div>
+              <h3 className="text-2xl md:text-4xl font-bold text-stone-800">{item.titulo}</h3>
+              <p className="text-sm md:text-lg text-stone-500 leading-relaxed font-light">{item.descricao}</p>
+              <div className="flex items-center justify-center md:justify-start gap-2 text-pink-400 text-xs italic bg-pink-50/50 p-2 rounded-lg inline-flex">
+                <MapPin size={14} /> <span>{item.detalhe}</span>
+              </div>
+            </div>
+
+          </div>
+        ))}
       </section>
 
-      <section className="min-h-[40vh] flex flex-col items-center justify-center py-10 px-4 text-center">
-          <h1 className='text-3xl md:text-5xl font-bold text-pink-700 mb-6'>Esses são apenas alguns dos momentos...</h1>
-          <p className="text-xl text-stone-500 mb-8">Mas o melhor ainda está por vir.</p>
-          <Heart className='w-24 h-24 text-pink-500 animate-pulse'/>
-      </section>
-
-      {/* --- O GRANDE PEDIDO --- */}
-      <section className="min-h-[80vh] flex flex-col items-center justify-center py-20 px-4 bg-gradient-to-t from-pink-200 via-pink-50 to-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hearts.png')] opacity-10"></div>
-        
-        <h2 className="text-4xl md:text-7xl font-bold text-red-500 mb-12 text-center drop-shadow-sm relative z-10">
-          Uma última pergunta...
-        </h2>
-        
-        <div className="bg-white/90 backdrop-blur-md p-8 md:p-16 rounded-[3rem] shadow-2xl text-center max-w-3xl w-full border-4 border-pink-100 relative z-10">
-          <p className="text-3xl md:text-5xl text-stone-700 font-medium mb-16 leading-relaxed">
-            Sofia, você aceita <br/> 
-            <span className="font-extrabold text-pink-600">namorar comigo</span>?
-          </p>
+      {/* O PEDIDO */}
+      <section className="min-h-[80vh] flex flex-col items-center justify-center px-4 relative z-10 bg-gradient-to-t from-pink-100 to-transparent">
+        <div className="bg-white/90 backdrop-blur-xl p-8 md:p-16 rounded-[2.5rem] shadow-2xl text-center max-w-2xl w-full border-2 border-white mb-20">
+          <Heart className="mx-auto mb-6 text-red-500 animate-pulse" size={50} />
+          <h2 className="text-2xl md:text-5xl font-bold text-stone-800 mb-10 leading-snug">
+            Sofia, aceita fazer de todos os meus dias os mais felizes?
+          </h2>
           
-          <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-4 w-full">
             <button 
               onClick={() => setAceitou(true)}
-              className="w-full md:w-auto bg-green-500 hover:bg-green-600 text-white text-2xl font-bold py-6 px-16 rounded-full shadow-xl transform hover:scale-110 transition-all duration-200 hover:shadow-green-200/50"
+              className="w-full md:w-auto px-10 py-4 bg-red-500 text-white text-lg font-bold rounded-xl shadow-lg hover:bg-red-600 hover:scale-105 transition-all active:scale-95"
             >
-              SIM, CLARO!
+              SIM! ❤️
             </button>
-            
-            <button
-              style={{ position: noButtonPos.position, top: noButtonPos.top, left: noButtonPos.left }}
-              onMouseEnter={fogeBotao}
+            <button 
               onClick={fogeBotao}
-              className="w-full md:w-auto bg-stone-300 text-stone-500 text-2xl font-bold py-6 px-16 rounded-full shadow-inner cursor-not-allowed transition-all duration-100 mt-4 md:mt-0"
+              onMouseEnter={fogeBotao}
+              style={{ position: noButtonPos.position, top: noButtonPos.top, left: noButtonPos.left, zIndex: noButtonPos.zIndex }}
+              className="w-full md:w-auto px-10 py-4 bg-stone-200 text-stone-500 text-lg font-medium rounded-xl hover:bg-stone-300 transition-all"
             >
-              NÃO
+              Não...
             </button>
           </div>
-          <p className="mt-10 text-base text-stone-400 italic opacity-60">(Tente clicar no não... 👀)</p>
         </div>
       </section>
 
-      {/* --- PLAYER DE MÚSICA FLUTUANTE --- */}
-      <div className="fixed bottom-6 right-6 z-50 animate-bounce-slow">
-        <div className="bg-white/90 backdrop-blur-xl p-4 rounded-full shadow-2xl border border-pink-200 flex items-center gap-4 pr-6">
-          <div className={`bg-pink-100 p-3 rounded-full ${isPlaying ? 'animate-spin-slow' : ''}`}>
-            <Music className="w-6 h-6 text-pink-600" />
+      {/* PLAYER MOBILE/DESKTOP */}
+      {/* Barra fixa no rodapé para mobile, flutuante para desktop */}
+      <div className="fixed bottom-0 left-0 w-full md:w-auto md:bottom-6 md:right-6 z-[100]">
+        <div className="bg-white/95 backdrop-blur-xl border-t md:border border-pink-100 p-3 md:rounded-full shadow-[0_-4px_20px_rgba(0,0,0,0.1)] flex items-center justify-between md:gap-4 px-6 md:px-4">
+          
+          <div className="flex items-center gap-3 overflow-hidden">
+             <div className={`w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0 ${isPlaying ? 'animate-spin-slow' : ''}`}>
+                <Music size={18} className="text-pink-500" />
+             </div>
+             <div className="flex flex-col max-w-[150px]">
+                <span className="text-xs font-bold text-stone-800 truncate">{PLAYLIST[currentSongIndex].title}</span>
+                <span className="text-[10px] text-stone-400 uppercase tracking-widest">Nossa Playlist</span>
+             </div>
           </div>
-          <div className="hidden md:block">
-            <p className="text-sm font-bold text-stone-800 max-w-[150px] truncate">{PLAYLIST[currentSongIndex].title}</p>
-            <p className="text-xs text-pink-500">Nossa Trilha Sonora</p>
+
+          <div className="flex items-center gap-3">
+             <button onClick={togglePlay} className="w-10 h-10 flex items-center justify-center bg-red-500 text-white rounded-full shadow-md active:scale-90 transition-transform">
+               {isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-1" />}
+             </button>
+             <button onClick={nextSong} className="text-stone-400 hover:text-red-500 p-2">
+               <SkipForward size={22} />
+             </button>
           </div>
-          <div className="flex gap-2">
-            <button 
-              onClick={togglePlay} 
-              className="w-10 h-10 flex items-center justify-center bg-pink-500 hover:bg-pink-600 text-white rounded-full transition-colors shadow-md"
-            >
-              {isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-1" />}
-            </button>
-            <button 
-              onClick={nextSong} 
-              className="w-10 h-10 flex items-center justify-center bg-stone-100 hover:bg-stone-200 text-stone-600 rounded-full transition-colors"
-            >
-              <SkipForward size={18} />
-            </button>
-          </div>
+
         </div>
       </div>
 
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes fall {
+          0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.15; }
+          90% { opacity: 0.15; }
+          100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+        .animate-fall {
+          animation-name: fall;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+        }
+        .animate-spin-slow {
+          animation: spin 8s linear infinite;
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}} />
     </div>
   )
 }
-
 
 export default App
