@@ -358,8 +358,8 @@ function App() {
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fall {
           0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.15; }
-          90% { opacity: 0.15; }
+          10% { opacity: 0.3; }
+          50% { opacity: 1; }
           100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
         .animate-fall {
