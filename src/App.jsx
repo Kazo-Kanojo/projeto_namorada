@@ -18,69 +18,73 @@ const JORNADA = [
   {
     data: "O Início",
     titulo: "Onde tudo começou",
-    descricao: "Nosso primeiro beijo, onde tudo começou no dia que voce me mostrou ser incrivel, com uma grande e diveritda conversa na caderia da piscina.",
-    foto: "/primeiro_beijo.jpeg", // Usando a foto que você já tem como exemplo
+    descricao: "Nosso primeiro beijo, onde tudo começou. No dia em que você me mostrou ser incrível, com uma grande e divertida conversa na cadeira da piscina.",
+    foto: "/primeiro_beijo.jpeg",
     icone: <Heart className="w-6 h-6 text-red-500" />
   },
   {
-    data: "Duda chas",
+    data: "Duda Chas",
     titulo: "Dormir juntos",
-    descricao: "Esse dia me marcou muito, dia que mais ficamos de casal, e eramos o casal que menos daria certo, mas somos o unicos que sobrevivemos",
-    foto: "/casa_duda.jpeg", // Exemplo: Adicione uma foto chamada 'foto-viagem.jpg' na pasta public
+    descricao: "Esse dia me marcou muito. Foi o dia em que mais ficamos de casal. Éramos o casal que menos daria certo, mas somos os únicos que sobrevivemos.",
+    foto: "/casa_duda.jpeg",
     icone: <Heart className="w-6 h-6 text-blue-500" />
   },
   {
     data: "CP ou CPK",
     titulo: "Lugar especial",
-    descricao: "Lugar onde mais saimos, lugar onde eu me apaixonei por você, defiinitivamente um lugar especial para nós dois.",
-    foto: "/foto_favorita.jpeg", // Exemplo
+    descricao: "Lugar onde mais saímos, lugar onde eu me apaixonei por você. Definitivamente um lugar especial para nós dois.",
+    foto: "/foto_favorita.jpeg",
     icone: <Heart className="w-6 h-6 text-yellow-500" />
   },
   {
-    data: "Niver godoy",
+    data: "Niver Godoy",
     titulo: "Foto fofinha",
-    descricao: "Essa foto tinha que estar aqui, amo ela e sei que voce a ama também.",
-    foto: "niver_gdy_fofinho.jpeg", // Exemplo
+    descricao: "Essa foto tinha que estar aqui, amo ela e sei que você a ama também.",
+    foto: "niver_gdy_fofinho.jpeg",
     icone: <Heart className="w-6 h-6 text-green-500" />
   },
   {
     data: "Casal",
     titulo: 'Primeiro "Date"',
-    descricao: "Paixão de cristo, pra mim é uma data especial pois pela primeira vez que saimos juntos como um casal sem medo de sermos vistos",
-    foto: "primeira_saida_casal.jpeg", // Exemplo
+    descricao: "Paixão de Cristo. Para mim é uma data especial, pois foi a primeira vez que saímos juntos como um casal, sem medo de sermos vistos.",
+    foto: "primeira_saida_casal.jpeg",
     icone: <Heart className="w-6 h-6 text-cyan-500" />
-  },{
+  },
+  {
     data: "Miguxos",
-    titulo: "primeiro? não sei",
-    descricao: "Não sei se foi o primeiro miguxos, mas tem que estar aqui, foi muito especial pra mim, pois foi algo que construimos que não havia julgamentos, apenas pura diversão, alegria, respeito e gargalhadas.",
-    foto: "miguxos.jpeg", // Exemplo
+    titulo: "Primeiro? Não sei",
+    descricao: "Não sei se foi o primeiro 'miguxos', mas tem que estar aqui. Foi muito especial para mim, pois foi algo que construímos onde não havia julgamentos, apenas pura diversão, alegria, respeito e gargalhadas.",
+    foto: "miguxos.jpeg",
     icone: <Heart className="w-6 h-6 text-purple-500" />
-  },{
+  },
+  {
     data: "😉😉🙄🙄",
-    titulo: "Seu belo biceps",
-    descricao: "Mesmo não sendo maior que meu gigantesco biceps, ainda assim o seu é grandinho",
-    foto: "seu_biceps_maior.jpeg", // Exemplo
+    titulo: "Seu belo bíceps",
+    descricao: "Mesmo não sendo maior que meu gigantesco bíceps, ainda assim o seu é grandinho.",
+    foto: "seu_biceps_maior.jpeg",
     icone: <Heart className="w-6 h-6 text-fuchsia-500" />
-  },{
+  },
+  {
     data: "Aldeia",
-    titulo: "Casa guadalupe",
-    descricao: "Fotinha na casa da Valen Guadalupe, amo essa foto a gente ta muito bonito, e a diferença de altura é nitido.",
-    foto: "lindos_aldeia.jpeg", // Exemplo
-    icone: <Heart className="w-6 h-6 text-emerald-500" />
-  },{
-    data: "MIguxos",
-    titulo: "Não superei",
-    descricao: "Ainda não superei os miguxos com certeza esta no top 3 melhores resenhas.",
-    foto: "miguxos_2.jpeg", // Exemplo
-    icone: <Heart className="w-6 h-6 text-gray-500" />
-  },{
-    data: "Aniversario",
-    titulo: "Melhor dia",
-    descricao: "Um dia que pra mim foi muito especial, pois é o meu primeiro aniversario que você passa ao meu lado.",
-    foto: "24_1.jpeg", // Exemplo
+    titulo: "Casa Guadalupe",
+    descricao: "Fotinha na casa da Valen Guadalupe. Amo essa foto, a gente tá muito bonito, e a diferença de altura é nítida.",
+    foto: "lindos_aldeia.jpeg",
     icone: <Heart className="w-6 h-6 text-emerald-500" />
   },
-
+  {
+    data: "Miguxos",
+    titulo: "Não superei",
+    descricao: "Ainda não superei os miguxos, com certeza está no top 3 melhores resenhas.",
+    foto: "miguxos_2.jpeg",
+    icone: <Heart className="w-6 h-6 text-gray-500" />
+  },
+  {
+    data: "Aniversário",
+    titulo: "Melhor dia",
+    descricao: "Um dia que pra mim foi muito especial, pois é o meu primeiro aniversário que você passa ao meu lado.",
+    foto: "24_1.jpeg",
+    icone: <Heart className="w-6 h-6 text-emerald-500" />
+  },
 ];
 
 function App() {
@@ -167,7 +171,7 @@ function App() {
         </div>
         
         <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-600 mt-8 mb-4 text-center">
-          Para o Amor da Minha Vida
+          Sofia Munhoz Rodrigues
         </h1>
         <p className="text-xl md:text-2xl text-stone-600 max-w-2xl text-center font-light">
           "Cada momento ao seu lado é uma página da minha história favorita."
