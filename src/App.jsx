@@ -7,7 +7,8 @@ const DATA_INICIO_NAMORO = new Date("2025-02-16T00:00:00");
 // 2. Playlist de músicas
 const PLAYLIST = [
   { title: "Nossa Música", url: "/musica1.mp3" }, 
-  { title: "Música da Viagem", url: "/musica2.mp3" },
+  { title: "Obrigado por me esperar", url: "/musica2.mp3" },
+  { title: "Te amo", url: "/musica3.mp3" }
 ];
 
 // 3. Dados da Jornada
@@ -148,7 +149,6 @@ function App() {
           <button className='h-15 cursor-pointer'>
             <ChevronLeft size={50}
             onClick={() =>{setAceitou(false)}}/>
-
           </button>
         </div>
       </div>
