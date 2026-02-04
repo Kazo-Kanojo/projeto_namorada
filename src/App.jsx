@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Heart, Trophy, Music, Play, Pause, SkipForward, Clock, Camera } from 'lucide-react'
+import { Heart, Trophy, Music, Play, Pause, SkipForward, Clock, Camera,  ChevronLeft } from 'lucide-react'
 
 // --- CONFIGURAÇÕES DO CASAL ---
 const DATA_INICIO_NAMORO = new Date("2025-02-16T00:00:00"); 
@@ -142,6 +142,14 @@ function App() {
         <div className="relative group">
              <img src="/foto_favorita.jpeg" alt="Nós" className="w-72 h-72 md:w-96 md:h-96 object-cover rounded-full border-8 border-white shadow-2xl transform group-hover:scale-105 transition duration-500" />
              <Heart className="absolute bottom-4 right-10 text-red-500 fill-red-500 w-16 h-16 md:w-24 md:h-24 animate-ping" />
+
+        </div>
+        <div>
+          <button className='h-15 cursor-pointer'>
+            <ChevronLeft size={50}
+            onClick={() =>{setAceitou(false)}}/>
+
+          </button>
         </div>
       </div>
     );
@@ -305,5 +313,6 @@ function App() {
     </div>
   )
 }
+
 
 export default App
