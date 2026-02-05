@@ -21,28 +21,76 @@ const JORNADA = [
   {
     data: "O Início",
     titulo: "Onde tudo começou",
-    detalhe: "O brilho nos olhos...",
-    descricao: "Nosso primeiro beijo, onde tudo começou. No dia em que você me mostrou ser incrível.",
-    foto: "/primeiro_beijo.jpeg", // Essas fotos principais continuam na public ou onde você preferir
-    icone: <Heart className="w-5 h-5 text-red-500" />
+    descricao: "Nosso primeiro beijo, onde tudo começou. No dia em que você me mostrou ser incrível, com uma grande e divertida conversa na cadeira da piscina.",
+    foto: "/primeiro_beijo.jpeg",
+    icone: <Heart className="w-6 h-6 text-red-500" />
   },
   {
     data: "Duda Chas",
     titulo: "Dormir juntos",
-    detalhe: "Contra as estatísticas.",
-    descricao: "Esse dia me marcou muito. Foi o dia em que mais ficamos de casal.",
+    descricao: "Esse dia me marcou muito. Foi o dia em que mais ficamos de casal. Éramos o casal que menos daria certo, mas somos os únicos que sobrevivemos.",
     foto: "/casa_duda.jpeg",
-    icone: <Heart className="w-5 h-5 text-blue-500" />
+    icone: <Heart className="w-6 h-6 text-blue-500" />
   },
   {
     data: "CP ou CPK",
     titulo: "Lugar especial",
-    detalhe: "Nosso refúgio.",
-    descricao: "Lugar onde mais saímos, lugar onde eu me apaixonei por você.",
+    descricao: "Lugar onde mais saímos, lugar onde eu me apaixonei por você. Definitivamente um lugar especial para nós dois.",
     foto: "/foto_favorita.jpeg",
-    icone: <Heart className="w-5 h-5 text-yellow-500" />
+    icone: <Heart className="w-6 h-6 text-yellow-500" />
   },
-  // ... adicione o resto da sua lista JORNADA aqui ...
+  {
+    data: "Niver Godoy",
+    titulo: "Foto fofinha",
+    descricao: "Essa foto tinha que estar aqui, amo ela e sei que você a ama também.",
+    foto: "niver_gdy_fofinho.jpeg",
+    icone: <Heart className="w-6 h-6 text-green-500" />
+  },
+  {
+    data: "Casal",
+    titulo: 'Primeiro "Date"',
+    descricao: "Paixão de Cristo. Para mim é uma data especial, pois foi a primeira vez que saímos juntos como um casal, sem medo de sermos vistos.",
+    foto: "primeira_saida_casal.jpeg",
+    icone: <Heart className="w-6 h-6 text-cyan-500" />
+  },
+  {
+    data: "Miguxos",
+    titulo: "Primeiro? Não sei",
+    descricao: "Não sei se foi o primeiro 'miguxos', mas tem que estar aqui. Foi muito especial para mim, pois foi algo que construímos onde não havia julgamentos, apenas pura diversão, alegria, respeito e gargalhadas.",
+    foto: "miguxos.jpeg",
+    icone: <Heart className="w-6 h-6 text-purple-500" />
+  },
+
+  {
+    data: "😉😉🙄🙄",
+    titulo: "Seu belo bíceps",
+    descricao: "Mesmo não sendo maior que meu gigantesco bíceps, ainda assim o seu é grandinho.",
+    foto: "seu_biceps_maior.jpeg",
+    icone: <Heart className="w-6 h-6 text-fuchsia-500" />
+  },
+  {
+
+    data: "Aldeia",
+    titulo: "Casa Guadalupe",
+    descricao: "Fotinha na casa da Valen Guadalupe. Amo essa foto, a gente tá muito bonito, e a diferença de altura é nítida.",
+    foto: "lindos_aldeia.jpeg",
+    icone: <Heart className="w-6 h-6 text-emerald-500" />
+  },
+  {
+
+    data: "Miguxos",
+    titulo: "Não superei",
+    descricao: "Ainda não superei os miguxos, com certeza está no top 3 melhores resenhas.",
+    foto: "miguxos_2.jpeg",
+    icone: <Heart className="w-6 h-6 text-gray-500" />
+  },
+  {
+    data: "Aniversário",
+    titulo: "Melhor dia",
+    descricao: "Um dia que pra mim foi muito especial, pois é o meu primeiro aniversário que você passa ao meu lado.",
+    foto: "24_1.jpeg",
+    icone: <Heart className="w-6 h-6 text-emerald-500" />
+  },
 ];
 
 // --- COMPONENTE DA CHUVA AUTOMÁTICA ---
