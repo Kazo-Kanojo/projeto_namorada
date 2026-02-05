@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Heart, Music, Play, Pause, SkipForward, Clock, Camera, ChevronLeft, Sparkles, MapPin } from 'lucide-react'
+import { Heart, Music, Play, Pause, SkipForward, ChevronLeft, Sparkles, MapPin } from 'lucide-react'
+
+// --- 1. IMPORTAÇÃO MÁGICA DE FOTOS (VITE) ---
+// Isso procura todas as imagens dentro da pasta src/assets/memorias
+const fotosImports = import.meta.glob('./assets/memorias/*.{png,jpg,jpeg,svg,webp}', { eager: true });
+// Transforma em uma lista de links simples
+const FOTOS_DA_CHUVA = Object.values(fotosImports).map((img) => img.default);
 
 // --- CONFIGURAÇÕES DO CASAL ---
 const DATA_INICIO_NAMORO = new Date("2025-02-16T00:00:00"); 
@@ -10,117 +16,80 @@ const PLAYLIST = [
   { title: "Te amo", url: "/musica3.mp3" }
 ];
 
-
-
-
+// Essa lista continua manual pois tem textos específicos para a timeline
 const JORNADA = [
   {
     data: "O Início",
     titulo: "Onde tudo começou",
-    descricao: "Nosso primeiro beijo, onde tudo começou. No dia em que você me mostrou ser incrível, com uma grande e divertida conversa na cadeira da piscina.",
-    foto: "/primeiro_beijo.jpeg",
-    icone: <Heart className="w-6 h-6 text-red-500" />
+    detalhe: "O brilho nos olhos...",
+    descricao: "Nosso primeiro beijo, onde tudo começou. No dia em que você me mostrou ser incrível.",
+    foto: "/primeiro_beijo.jpeg", // Essas fotos principais continuam na public ou onde você preferir
+    icone: <Heart className="w-5 h-5 text-red-500" />
   },
   {
     data: "Duda Chas",
     titulo: "Dormir juntos",
-    descricao: "Esse dia me marcou muito. Foi o dia em que mais ficamos de casal. Éramos o casal que menos daria certo, mas somos os únicos que sobrevivemos.",
+    detalhe: "Contra as estatísticas.",
+    descricao: "Esse dia me marcou muito. Foi o dia em que mais ficamos de casal.",
     foto: "/casa_duda.jpeg",
-    icone: <Heart className="w-6 h-6 text-blue-500" />
+    icone: <Heart className="w-5 h-5 text-blue-500" />
   },
   {
     data: "CP ou CPK",
     titulo: "Lugar especial",
-    descricao: "Lugar onde mais saímos, lugar onde eu me apaixonei por você. Definitivamente um lugar especial para nós dois.",
+    detalhe: "Nosso refúgio.",
+    descricao: "Lugar onde mais saímos, lugar onde eu me apaixonei por você.",
     foto: "/foto_favorita.jpeg",
-    icone: <Heart className="w-6 h-6 text-yellow-500" />
+    icone: <Heart className="w-5 h-5 text-yellow-500" />
   },
-  {
-    data: "Niver Godoy",
-    titulo: "Foto fofinha",
-    descricao: "Essa foto tinha que estar aqui, amo ela e sei que você a ama também.",
-    foto: "niver_gdy_fofinho.jpeg",
-    icone: <Heart className="w-6 h-6 text-green-500" />
-  },
-  {
-    data: "Casal",
-    titulo: 'Primeiro "Date"',
-    descricao: "Paixão de Cristo. Para mim é uma data especial, pois foi a primeira vez que saímos juntos como um casal, sem medo de sermos vistos.",
-    foto: "primeira_saida_casal.jpeg",
-    icone: <Heart className="w-6 h-6 text-cyan-500" />
-  },
-  {
-    data: "Miguxos",
-    titulo: "Primeiro? Não sei",
-    descricao: "Não sei se foi o primeiro 'miguxos', mas tem que estar aqui. Foi muito especial para mim, pois foi algo que construímos onde não havia julgamentos, apenas pura diversão, alegria, respeito e gargalhadas.",
-    foto: "miguxos.jpeg",
-    icone: <Heart className="w-6 h-6 text-purple-500" />
-  },
-  {
-    data: "😉😉🙄🙄",
-    titulo: "Seu belo bíceps",
-    descricao: "Mesmo não sendo maior que meu gigantesco bíceps, ainda assim o seu é grandinho.",
-    foto: "seu_biceps_maior.jpeg",
-    icone: <Heart className="w-6 h-6 text-fuchsia-500" />
-  },
-  {
-    data: "Aldeia",
-    titulo: "Casa Guadalupe",
-    descricao: "Fotinha na casa da Valen Guadalupe. Amo essa foto, a gente tá muito bonito, e a diferença de altura é nítida.",
-    foto: "lindos_aldeia.jpeg",
-    icone: <Heart className="w-6 h-6 text-emerald-500" />
-  },
-  {
-    data: "Miguxos",
-    titulo: "Não superei",
-    descricao: "Ainda não superei os miguxos, com certeza está no top 3 melhores resenhas.",
-    foto: "miguxos_2.jpeg",
-    icone: <Heart className="w-6 h-6 text-gray-500" />
-  },
-  {
-    data: "Aniversário",
-    titulo: "Melhor dia",
-    descricao: "Um dia que pra mim foi muito especial, pois é o meu primeiro aniversário que você passa ao meu lado.",
-    foto: "24_1.jpeg",
-    icone: <Heart className="w-6 h-6 text-emerald-500" />
-  },
+  // ... adicione o resto da sua lista JORNADA aqui ...
 ];
 
-// Componente de Chuva Otimizado para Mobile
-const RainEffect = ({ images }) => {
+// --- COMPONENTE DA CHUVA AUTOMÁTICA ---
+const RainEffect = () => {
+  // UseMemo para gerar as partículas apenas uma vez e não pesar o site
   const particles = useMemo(() => {
-    return [...Array(12)].map((_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      delay: `${Math.random() * 5}s`,
-      duration: `${10 + Math.random() * 10}s`,
-      size: Math.random() * (50 - 30) + 30, // Tamanho menor no mobile
-      img: images[i % images.length].foto,
-      type: i % 3 === 0 ? 'heart' : 'photo'
-    }));
-  }, [images]);
+    // Se não tiver fotos na pasta, usa placeholders ou só corações
+    const listaFotos = FOTOS_DA_CHUVA.length > 0 ? FOTOS_DA_CHUVA : ["https://via.placeholder.com/150"];
+
+    return [...Array(25)].map((_, i) => {
+      // Pega uma foto aleatória da pasta
+      const fotoAleatoria = listaFotos[Math.floor(Math.random() * listaFotos.length)];
+      
+      return {
+        id: i,
+        left: `${Math.random() * 100}%`,
+        delay: `${Math.random() * 15}s`, // Delay maior para parecer infinito
+        duration: `${15 + Math.random() * 10}s`, // Duração longa para cair devagar
+        size: Math.random() * (120 - 60) + 60, // Tamanho variando entre 60px e 120px
+        img: fotoAleatoria,
+        // A cada 3 itens, 1 é coração, os outros 2 são fotos
+        type: i % 3 === 0 ? 'heart' : 'photo'
+      };
+    });
+  }, []);
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
       {particles.map(p => (
         <div
           key={p.id}
-          className="absolute animate-fall opacity-15"
+          className="absolute animate-fall opacity-0" // Começa invisível (controlado pelo keyframe)
           style={{
             left: p.left,
             animationDelay: p.delay,
             animationDuration: p.duration,
-            top: '-100px'
+            top: '-15vh' // Começa um pouco acima da tela
           }}
         >
           {p.type === 'heart' ? (
-            <Heart size={p.size / 1.5} className="text-pink-300 fill-pink-200" />
+            <Heart size={p.size / 2} className="text-pink-300 fill-pink-200/50" />
           ) : (
             <img 
               src={p.img} 
               style={{ width: p.size, height: p.size }} 
-              className="rounded-lg object-cover border border-white shadow-sm"
-              alt=""
+              className="rounded-lg object-cover border-2 border-white/40 shadow-sm"
+              alt="memoria"
             />
           )}
         </div>
@@ -182,7 +151,6 @@ function App() {
   };
 
   const fogeBotao = (e) => {
-    // Cálculo seguro para mobile (evita sair da tela)
     const buttonWidth = 100;
     const buttonHeight = 50;
     const maxWidth = window.innerWidth - buttonWidth - 20;
@@ -200,7 +168,8 @@ function App() {
         <h1 className="text-4xl md:text-6xl font-bold text-red-600 mb-6 animate-bounce">PARA SEMPRE NÓS! ❤️</h1>
         <p className="text-stone-600 mb-8 max-w-md">Prometo te fazer a mulher mais feliz desse mundo.</p>
         <div className="relative">
-          <img src="/foto_favorita.jpeg" className="w-64 h-64 md:w-96 md:h-96 object-cover rounded-full border-8 border-white shadow-2xl" />
+          {/* Se tiver foto na chuva, usa a primeira como destaque, se não usa a favorita */}
+          <img src={FOTOS_DA_CHUVA[0] || "/foto_favorita.jpeg"} className="w-64 h-64 md:w-96 md:h-96 object-cover rounded-full border-8 border-white shadow-2xl" />
           <Sparkles className="absolute -top-4 -right-4 text-yellow-400 animate-pulse" size={40} />
         </div>
         <button onClick={() => setAceitou(false)} className="mt-12 px-6 py-2 rounded-full bg-white shadow-md text-pink-500 flex items-center gap-2 hover:bg-pink-50 transition-colors">
@@ -221,7 +190,8 @@ function App() {
         />
       </div>
 
-      <RainEffect images={JORNADA} />
+      {/* CHUVA AUTOMÁTICA DA PASTA ASSETS/MEMORIAS */}
+      <RainEffect />
 
       {/* HERO SECTION */}
       <header className="relative min-h-[90vh] flex flex-col items-center justify-center p-4 text-center">
@@ -245,7 +215,7 @@ function App() {
         </div>
       </header>
 
-      {/* CONTADOR - Grid Responsivo (2x2 Mobile, 4x1 Desktop) */}
+      {/* CONTADOR */}
       <section className="py-8 px-4 relative z-10">
         <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md p-6 rounded-[2rem] shadow-lg border border-pink-50">
           <h2 className="text-center text-xs font-bold uppercase tracking-widest text-pink-400 mb-6">Tempo juntos</h2>
@@ -260,30 +230,20 @@ function App() {
         </div>
       </section>
 
-      {/* JORNADA - Layout Coluna Única (Mobile First) */}
+      {/* JORNADA */}
       <section className="max-w-5xl mx-auto py-16 px-4 space-y-20 relative z-10">
         {JORNADA.map((item, index) => (
-          // No mobile: sempre coluna. No desktop (md): alterna lados
           <div key={index} className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-6 md:gap-16`}>
-            
-            {/* Card da Foto */}
             <div className="w-full md:w-1/2 group">
               <div className="relative bg-white p-3 rounded-[2rem] shadow-xl transform transition duration-500 hover:scale-[1.02]">
                 <div className="aspect-[4/5] rounded-[1.5rem] overflow-hidden bg-stone-100">
-                  <img 
-                    src={item.foto} 
-                    className="w-full h-full object-cover" 
-                    alt={item.titulo}
-                    loading="lazy"
-                  />
+                  <img src={item.foto} className="w-full h-full object-cover" alt={item.titulo} loading="lazy" />
                 </div>
                 <div className="absolute -top-3 -right-3 bg-white p-2 rounded-full shadow-lg border border-pink-50">
                   {item.icone}
                 </div>
               </div>
             </div>
-
-            {/* Textos */}
             <div className="w-full md:w-1/2 text-center md:text-left space-y-3 px-2">
               <div className="flex flex-col md:flex-row items-center md:items-start gap-2">
                 <span className="bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">
@@ -296,19 +256,17 @@ function App() {
                 <MapPin size={14} /> <span>{item.detalhe}</span>
               </div>
             </div>
-
           </div>
         ))}
       </section>
 
-      {/* O PEDIDO */}
+      {/* PEDIDO */}
       <section className="min-h-[80vh] flex flex-col items-center justify-center px-4 relative z-10 bg-gradient-to-t from-pink-100 to-transparent">
         <div className="bg-white/90 backdrop-blur-xl p-8 md:p-16 rounded-[2.5rem] shadow-2xl text-center max-w-2xl w-full border-2 border-white mb-20">
           <Heart className="mx-auto mb-6 text-red-500 animate-pulse" size={50} />
           <h2 className="text-2xl md:text-5xl font-bold text-stone-800 mb-10 leading-snug">
             Sofia, aceita fazer de todos os meus dias os mais felizes?
           </h2>
-          
           <div className="flex flex-col md:flex-row justify-center items-center gap-4 w-full">
             <button 
               onClick={() => setAceitou(true)}
@@ -328,11 +286,9 @@ function App() {
         </div>
       </section>
 
-      {/* PLAYER MOBILE/DESKTOP */}
-      {/* Barra fixa no rodapé para mobile, flutuante para desktop */}
+      {/* PLAYER */}
       <div className="fixed bottom-0 left-0 w-full md:w-auto md:bottom-6 md:right-6 z-[100]">
         <div className="bg-white/95 backdrop-blur-xl border-t md:border border-pink-100 p-3 md:rounded-full shadow-[0_-4px_20px_rgba(0,0,0,0.1)] flex items-center justify-between md:gap-4 px-6 md:px-4">
-          
           <div className="flex items-center gap-3 overflow-hidden">
              <div className={`w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0 ${isPlaying ? 'animate-spin-slow' : ''}`}>
                 <Music size={18} className="text-pink-500" />
@@ -342,7 +298,6 @@ function App() {
                 <span className="text-[10px] text-stone-400 uppercase tracking-widest">Nossa Playlist</span>
              </div>
           </div>
-
           <div className="flex items-center gap-3">
              <button onClick={togglePlay} className="w-10 h-10 flex items-center justify-center bg-red-500 text-white rounded-full shadow-md active:scale-90 transition-transform">
                {isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-1" />}
@@ -351,16 +306,26 @@ function App() {
                <SkipForward size={22} />
              </button>
           </div>
-
         </div>
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fall {
-          0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.3; }
-          50% { opacity: 1; }
-          100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+          0% { 
+            transform: translateY(-10vh) rotate(0deg) scale(0.5); 
+            opacity: 0; 
+          }
+          10% { 
+            opacity: 0.3; 
+          }
+          50% { 
+            opacity: 1; 
+            transform: translateY(50vh) rotate(180deg) scale(1.5); 
+          }
+          100% { 
+            transform: translateY(100vh) rotate(360deg) scale(1.5); 
+            opacity: 0; 
+          }
         }
         .animate-fall {
           animation-name: fall;
