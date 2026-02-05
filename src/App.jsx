@@ -217,10 +217,10 @@ function App() {
         <p className="text-stone-600 mb-8 max-w-md">Prometo te fazer a mulher mais feliz desse mundo.</p>
         <div className="relative">
           {/* Se tiver foto na chuva, usa a primeira como destaque, se não usa a favorita */}
-          <img src={FOTOS_DA_CHUVA[0] || "/foto_favorita.jpeg"} className="w-64 h-64 md:w-96 md:h-96 object-cover rounded-full border-8 border-white shadow-2xl" />
+          <img src="/foto_favorita.jpeg" className="w-64 h-64 md:w-96 md:h-96 object-cover rounded-full border-8 border-white shadow-2xl" />
           <Sparkles className="absolute -top-4 -right-4 text-yellow-400 animate-pulse" size={40} />
         </div>
-        <button onClick={() => setAceitou(false)} className="mt-12 px-6 py-2 rounded-full bg-white shadow-md text-pink-500 flex items-center gap-2 hover:bg-pink-50 transition-colors">
+        <button onClick={() => setAceitou(false)} className="mt-12 px-6 py-2 rounded-full bg-white shadow-md text-pink-500 flex items-center gap-2 hover:bg-pink-50 transition-colors cursor-pointer">
           <ChevronLeft size={20} /> Rever nossa história
         </button>
       </div>
@@ -307,32 +307,62 @@ function App() {
           </div>
         ))}
       </section>
+       <section className="min-h-[50vh] flex flex-col items-center justify-center py-20 px-6 bg-white">
+  <Heart className="w-16 h-16 text-pink-500 fill-pink-100 animate-pulse mb-6" strokeWidth={1.5} />
+  
+  <h1 className="text-3xl md:text-4xl font-bold text-stone-800 text-center mb-2">
+    Nossa coleção de <span className="text-pink-500 italic font-serif">momentos eternos</span>
+  </h1>
+  
+  <p className="text-stone-500 text-lg font-light max-w-md text-center">
+    Essas fotos são apenas o rascunho de uma história que nunca vai ter fim.
+  </p>
+</section>
+      
+      
 
       {/* PEDIDO */}
-      <section className="min-h-[80vh] flex flex-col items-center justify-center px-4 relative z-10 bg-gradient-to-t from-pink-100 to-transparent">
-        <div className="bg-white/90 backdrop-blur-xl p-8 md:p-16 rounded-[2.5rem] shadow-2xl text-center max-w-2xl w-full border-2 border-white mb-20">
-          <Heart className="mx-auto mb-6 text-red-500 animate-pulse" size={50} />
-          <h2 className="text-2xl md:text-5xl font-bold text-stone-800 mb-10 leading-snug">
-            Sofia, aceita fazer de todos os meus dias os mais felizes?
-          </h2>
-          <div className="flex flex-col md:flex-row justify-center items-center gap-4 w-full">
-            <button 
-              onClick={() => setAceitou(true)}
-              className="w-full md:w-auto px-10 py-4 bg-red-500 text-white text-lg font-bold rounded-xl shadow-lg hover:bg-red-600 hover:scale-105 transition-all active:scale-95"
-            >
-              SIM! ❤️
-            </button>
-            <button 
-              onClick={fogeBotao}
-              onMouseEnter={fogeBotao}
-              style={{ position: noButtonPos.position, top: noButtonPos.top, left: noButtonPos.left, zIndex: noButtonPos.zIndex }}
-              className="w-full md:w-auto px-10 py-4 bg-stone-200 text-stone-500 text-lg font-medium rounded-xl hover:bg-stone-300 transition-all"
-            >
-              Não...
-            </button>
-          </div>
-        </div>
-      </section>
+      <section className="min-h-[80vh] flex flex-col items-center justify-center px-4 relative z-10">
+  
+  {/* Fundo de luz (Glow) atrás do cartão */}
+  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[50%] bg-red-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
+  <h2 className="text-3xl md:text-5xl font-bold text-stone-800 mb-8 text-center relative z-10 tracking-tight">
+    Uma última pergunta...
+  </h2>
+
+  <div className="bg-white/60 backdrop-blur-2xl p-8 md:p-14 rounded-[3rem] shadow-[0_20px_60px_rgba(255,0,0,0.15)] text-center max-w-xl w-full border border-white/50 relative z-10 transition-transform hover:scale-[1.02] duration-500">
+    
+    <div className="bg-red-50 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 shadow-inner">
+      <Heart className="text-red-500 fill-red-500 animate-pulse" size={40} />
+    </div>
+
+    <h2 className="text-3xl md:text-5xl font-bold text-stone-800 mb-10 leading-tight">
+      Sofia, aceita... <br/> 
+      <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-600">
+        namorar comigo?
+      </span>
+    </h2>
+
+    <div className="flex flex-col md:flex-row justify-center items-center gap-4 w-full">
+      <button 
+        onClick={() => setAceitou(true)}
+        className="w-full md:w-auto px-12 py-5 bg-gradient-to-r from-red-500 to-pink-600 text-white text-xl font-bold rounded-full shadow-xl shadow-red-200 hover:shadow-red-400 hover:scale-105 transition-all active:scale-95"
+      >
+        SIM, ACEITO! 💍
+      </button>
+      
+      <button 
+        onClick={fogeBotao}
+        onMouseEnter={fogeBotao}
+        style={{ position: noButtonPos.position, top: noButtonPos.top, left: noButtonPos.left, zIndex: noButtonPos.zIndex }}
+        className="w-full md:w-auto px-10 py-5 bg-stone-200 text-stone-700 text-lg font-medium rounded-full border border-stone-300 shadow-sm hover:bg-stone-100 transition-all"
+      >
+        Não...
+      </button>
+    </div>
+  </div>
+</section>
 
       {/* PLAYER */}
       <div className="fixed bottom-0 left-0 w-full md:w-auto md:bottom-6 md:right-6 z-[100]">
