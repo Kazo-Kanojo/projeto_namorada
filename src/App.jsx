@@ -60,8 +60,8 @@ const RainEffect = () => {
         id: i,
         left: `${Math.random() * 100}%`,
         delay: `${Math.random() * 15}s`, // Delay maior para parecer infinito
-        duration: `${15 + Math.random() * 10}s`, // Duração longa para cair devagar
-        size: Math.random() * (120 - 60) + 60, // Tamanho variando entre 60px e 120px
+        duration: `${15 + Math.random() * 5}s`, // Duração longa para cair devagar
+        size: Math.random() * (110 - 50) + 40, // Tamanho variando entre 60px e 120px
         img: fotoAleatoria,
         // A cada 3 itens, 1 é coração, os outros 2 são fotos
         type: i % 3 === 0 ? 'heart' : 'photo'
@@ -319,7 +319,7 @@ function App() {
             opacity: 0.3; 
           }
           50% { 
-            opacity: 1; 
+            opacity: 0.6; 
             transform: translateY(50vh) rotate(180deg) scale(1.5); 
           }
           100% { 
