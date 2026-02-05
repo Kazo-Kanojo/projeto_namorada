@@ -52,7 +52,7 @@ const RainEffect = () => {
     // Se não tiver fotos na pasta, usa placeholders ou só corações
     const listaFotos = FOTOS_DA_CHUVA.length > 0 ? FOTOS_DA_CHUVA : ["https://via.placeholder.com/150"];
 
-    return [...Array(25)].map((_, i) => {
+    return [...Array(12)].map((_, i) => {
       // Pega uma foto aleatória da pasta
       const fotoAleatoria = listaFotos[Math.floor(Math.random() * listaFotos.length)];
       
